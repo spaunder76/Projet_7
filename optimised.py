@@ -25,7 +25,7 @@ def investissement_optimise(actions, budget_max):
 
 
 if __name__ == "__main__":
-    filename = "dataset1_Python+P7(1).csv"
+    filename = "actions.txt"
     budget_max = 500
     actions = lire_actions(filename)
 
