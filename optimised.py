@@ -1,0 +1,35 @@
+def lire_actions(filename):
+    actions = []
+    with open(filename, 'r') as file:
+        for line in file:
+            parts = line.strip().split(',')
+            nom, cout, benefice = parts[0], int(parts[1]), float(parts[2].rstrip('%'))
+            actions.append((nom, cout, benefice))
+    return actions
+
+def investissement_optimise(actions, budget_max):
+    actions_triees = sorted(actions, key=lambda x: x[2] / x[1], reverse=True)
+    investissement = []
+    cout_total = 0
+    profit_total = 0
+
+    for action in actions_triees:
+        if cout_total + action[1] <= budget_max:
+            investissement.append(action)
+            cout_total += action[1]
+            profit_total += action[1] * action[2] / 100
+
+    return investissement, profit_total
+
+if __name__ == "__main__":
+    filename = "actions.txt"
+    budget_max = 500
+    actions = lire_actions(filename)
+
+    investissement, profit_total = investissement_optimise(actions, budget_max)
+
+    print("Meilleures actions pour maximiser le profit (version optimisée) :")
+    for action in investissement:
+        print(f"{action[0]} - Coût : {action[1]} euros, Bénéfice : {action[1] * action[2] / 100} euros")
+
+    print(f"\nMeilleur profit total : {profit_total} euros")
