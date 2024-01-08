@@ -8,7 +8,6 @@ def lire_actions(filename):
             actions.append((nom, cout, benefice))
     return actions
 
-
 def investissement_optimise(actions, budget_max):
     actions_triees = sorted(actions, key=lambda x: x[2] / x[1] if x[1] != 0 else 0, reverse=True)
     investissement = []
@@ -21,19 +20,20 @@ def investissement_optimise(actions, budget_max):
             cout_total += action[1]
             profit_total += action[1] * action[2] / 100
 
-    return investissement, profit_total
-
+    return investissement, cout_total, profit_total
 
 if __name__ == "__main__":
     filename = "actions.txt"
     budget_max = 500
     actions = lire_actions(filename)
 
-    investissement, profit_total = investissement_optimise(actions, budget_max)
+    investissement, cout_total, profit_total = investissement_optimise(actions, budget_max)
 
     print("Meilleures actions pour maximiser le profit (version optimisée) :")
     for action in investissement:
         print(f"{action[0]} - Coût : {action[1]} euros, Bénéfice : {action[1] * action[2] / 100} euros")
 
-    print(f"\nMeilleur profit total : {profit_total} euros")
+    print(f"\nCout total : {cout_total} euros")
+    print(f"Meilleur profit total : {profit_total} euros")
+
 
