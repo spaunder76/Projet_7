@@ -13,27 +13,35 @@ def read_actions(filename):
             actions.append((name, cost, benefit))
     return actions
 
-# Fonction pour l'investissement optimisé
+# Fonction pour l'investissement optimisé avec programmation dynamique
 def optimized_investment(actions, max_budget):
-    # Trier les actions en fonction du rapport bénéfice/coût de manière décroissante
-    sorted_actions = sorted(actions, key=lambda x: x[2] / x[1] if x[1] != 0 else 0, reverse=True)
-    investment = []
-    total_cost = 0
-    total_profit = 0
+    n = len(actions)
+    dp = []
+    for i in range(n + 1):
+        row = [0] * (max_budget + 1)
+        dp.append(row)
 
-    # Sélectionner les actions pour l'investissement en respectant le budget maximal
-    for action in sorted_actions:
-        # Calculer le bénéfice potentiel si l'action est achetée
-        potential_profit = action[1] * action[2] / 100
-        # Vérifier si l'achat de l'action respecte le budget maximal
-        if action[1] != 0 and total_cost + action[1] <= max_budget:
-            # Si l'achat respecte le budget, ajouter l'action à l'investissement
-            investment.append(action)
-            total_cost += action[1]
-            total_profit += potential_profit
+    for i in range(1, n + 1):
+        for j in range(max_budget + 1):
+            current_action = actions[i - 1]
+            action_cost = int(current_action[1])  # Convertir le coût en entier
+            action_benefit = current_action[2] / 100
 
-    return investment, total_cost, total_profit
+            if action_cost <= j:
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - action_cost] + action_cost * action_benefit)
+            else:
+                dp[i][j] = dp[i - 1][j]
 
+    # Retracer les actions sélectionnées
+    selected_actions = []
+    i, j = n, max_budget
+    while i > 0 and j > 0:
+        if dp[i][j] != dp[i - 1][j]:
+            selected_actions.append(actions[i - 1])
+            j -= int(actions[i - 1][1])  # Convertir le coût en entier
+        i -= 1
+
+    return selected_actions, dp[n][max_budget]
 
 # Point d'entrée du script
 if __name__ == "__main__":
@@ -45,15 +53,21 @@ if __name__ == "__main__":
     actions = read_actions(filename)
 
     # Calculer l'investissement optimisé
-    investment, total_cost, total_profit = optimized_investment(actions, budget_max)
+    investment, total_profit = optimized_investment(actions, budget_max)
 
-    # Afficher les résultats
-    print("Meilleures actions pour maximiser le profit (version optimisée) :")
-    for action in investment:
-        print(f"{action[0]} - Coût : {action[1]} euros, Bénéfice : {action[1] * action[2] / 100} euros")
+# Afficher les résultats
+print("Meilleures actions pour maximiser le profit (version optimisée) :")
+total_cost = sum(action[1] for action in investment)
+for action in investment:
+    print(f"{action[0]} - Coût : {action[1]} euros, Bénéfice : {action[1] * action[2] / 100} euros")
 
-    print(f"\nCoût total : {total_cost} euros")
-    print(f"Meilleur profit total : {total_profit} euros")
+print(f"\nCoût total des actions achetées : {total_cost} euros")
+print(f"Meilleur profit total : {total_profit} euros")
+
+
+
+
+
 
 
 
